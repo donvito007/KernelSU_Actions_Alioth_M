@@ -8,23 +8,23 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/Three-taile-dragon/crdroid_kernel_oneplus_sdm845'
+        default: 'https://github.com/blue-toxic/kernel_xiaomi_gauguin'
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: '13.0-m00'
+        default: 'master'
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
-        default: 'arch/arm64/configs/enchilada_defconfig'
+        default: 'vendor/gauguin_user_defconfig'
       KERNEL_FILE:
         description: 'Your kernel out image name'
         required: true
-        default: 'Image.gz-dtb'
+        default: 'Image'
       CLANG_VERSION:
         description: 'Clang version'
         required: true
-        default: 'r450784d'
+        default: 'r487747c'
       BUILD_EXTRA_COMMAND:
         description: 'Extra build commands(e.g. LLVM=1 LLVM_IAS=1)'
         required: false
@@ -71,8 +71,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE && mkdir kernel_workspace && cd kernel_workspace
         mkdir clang-aosp
-        wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/0a65f9d32d1d7131a3697af08320cc0d890395c1/clang-r475365b.tar.gz
-        tar -C clang-aosp/ -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz
+        wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r487747c.tar.gz
+        tar -C clang-aosp/ -zxvf clang-r487747c.tar.gz
         mkdir gcc-aosp
         wget https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/archive/refs/heads/lineage-19.1.zip
         unzip -o lineage-19.1.zip -d gcc-aosp/
