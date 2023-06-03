@@ -1,0 +1,96 @@
+name: Build boot image
+on:
+  workflow_dispatch:
+     inputs:
+      KERNEL_SOURCE:
+        description: 'Kernel Source'
+        required: true
+        default: 'https://github.com/Terminator-J/crdroid_kernel_oneplus_sdm845'
+      KERNEL_SOURCE_BRANCH:
+        description: 'Branch'
+        required: true
+        default: '13.0-m00'
+      KERNEL_BUILD_CONFIG:
+        description: 'Kernel Build Config'
+        required: true
+        default: 'https://raw.githubusercontent.com/Three-taile-dragon/KernelSU_action/main/configs/build.config.wayne'
+      BOOTIMAGE:
+        description: 'Boot image to get ramdisk'
+        required: true
+        default: 'https://forum.xda-developers.com/attachments/crdroidandroid-13-0-20230112-fajita-v9-0_boot-img.5808997/'
+      USE_KPROBES:
+        description: 'If you want to use kprobes, please type "true"'
+        default: 'true'
+        required: true
+      KERNEL_DEFCONFIG:
+        description: 'KERNEL_DEFCONFIG'
+        required: true
+        default: 'enchilada_defconfig'
+        
+
+jobs:
+  build:
+    name: Build boot image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup build kernel environment
+      run: |
+        echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+        cd $GITHUB_WORKSPACE
+        git clone https://gerrit.googlesource.com/git-repo
+        mkdir kernel_workspace && cd kernel_workspace
+        git config --global user.name "Github Action"
+        git config --global user.email "Action@github.com"
+        ../git-repo/repo init --depth=1 -u https://github.com/Three-taile-dragon/KernelSU_Action -b main
+        ../git-repo/repo sync -j$(nproc --all)
+        sed -i '/SOURCE_DATE_EPOCH/d' build/_setup_env.sh
+        sed -i 's/build-host/Mac-Pro/' build/_setup_env.sh
+        sed -i 's/build-user/$(echo ${{ github.actor }} | tr A-Z a-z)/' build/_setup_env.sh
+        wget -O boot.img ${{ github.event.inputs.BOOTIMAGE }}
+        tools/mkbootimg/unpack_bootimg.py --boot_img=boot.img
+    - name: Setup build kernel environment-other
+      run: |
+        echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "DEVICE=$(echo ${{ env.KERNEL_DEFCONFIG }} | sed 's!vendor/!!;s/_defconfig//;s/_user//;s/-perf//')" >> $GITHUB_ENV
+        sudo apt-get update
+        sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+    - name: Download Clang-aosp and Gcc-aosp
+      run: |
+        cd $GITHUB_WORKSPACE && mkdir kernel_workspace && cd kernel_workspace
+        mkdir clang-aosp
+        wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/0a65f9d32d1d7131a3697af08320cc0d890395c1/clang-r475365b.tar.gz
+        tar -C clang-aosp/ -zxvf clang-r475365b.tar.gz
+        mkdir gcc-aosp
+        wget https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/archive/refs/heads/lineage-19.1.zip
+        unzip -o lineage-19.1.zip -d gcc-aosp/
+
+    - name: Download kernel source
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        git clone ${{ github.event.inputs.KERNEL_SOURCE }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
+
+    - name: Download kernel build config
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        wget -O build.config ${{ github.event.inputs.KERNEL_BUILD_CONFIG }}
+
+    - name: Setup KernelSU
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        curl -LSs "https://raw.githubusercontent.com/Three-taile-dragon/KernelSU/main/kernel/setup.sh" | bash -
+        if [ ${{ github.event.inputs.USE_KPROBES }} = true ]; then
+            echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ github.event.inputs.KERNEL_DEFCONFIG }}
+            echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ github.event.inputs.KERNEL_DEFCONFIG }}
+            echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ github.event.inputs.KERNEL_DEFCONFIG }}
+        fi
+
+    - name: Build boot-su.img
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        BRANCH=${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} BUILD_CONFIG=android-kernel/build.config build/build.sh
+
+    - name: Upload boot-su.img
+      uses: actions/upload-artifact@v3
+      with:
+        name: boot-su-${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}-${{ env.BUILD_TIME }}.img
+        path: kernel_workspace/out/${{ github.event.inputs.KERNEL_SOURCE_BRANCH }}/dist/boot.img
