@@ -8,15 +8,15 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/donvito007/android_kernel_xiaomi_sm7225'
+        default: 'https://github.com/donvito007/neko_kernel_xiaomi_gauguin'
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: 'ReBorn-Gauguin'
+        default: 'feature/KSU'
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
-        default: 'reborn-gauguin_defconfig'
+        default: 'vendor/gauguin_user_defconfig'
       KERNEL_FILE:
         description: 'Your kernel out image name'
         required: true
