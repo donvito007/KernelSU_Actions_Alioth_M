@@ -8,11 +8,11 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/donvito007/neko_kernel_xiaomi_gauguin'
+        default: 'https://github.com/donvito007/kernel_xiaomi_gauguin-perf'
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: 'feature/KSU'
+        default: 'main'
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
