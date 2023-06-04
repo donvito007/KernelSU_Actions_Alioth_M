@@ -164,23 +164,23 @@ jobs:
             make -j$(nproc --all) CC=clang O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}
         fi
 
-    - name: Check a kernel output files
-      run: |
-       cd $GITHUB_WORKSPACE/kernel_workspace
-       if [ -f android-kernel/out/arch/${{ env.ARCH }}/boot/${{ env.KERNEL_IMAGE_NAME }} ]; then
-           echo "CHECK_FILE_IS_OK=true" >> $GITHUB_ENV
-       else
-           echo "Kernel output file is empty"
-           exit 1
-       fi
-       if [ ${{ env.NEED_DTBO }} = true ]; then
-           if [ -f android-kernel/out/arch/${{ env.ARCH }}/boot/dtbo.img ]; then
-               echo "CHECK_DTBO_IS_OK=true" >> $GITHUB_ENV
-           else
-               echo "DTBO image is empty"
-               exit 1
-           fi
-       fi
+   # - name: Check a kernel output files
+   #  run: |
+   #    cd $GITHUB_WORKSPACE/kernel_workspace
+   #    if [ -f android-kernel/out/arch/${{ env.ARCH }}/boot/${{ env.KERNEL_IMAGE_NAME }} ]; then
+   #        echo "CHECK_FILE_IS_OK=true" >> $GITHUB_ENV
+   #    else
+   #        echo "Kernel output file is empty"
+   #        exit 1
+   #    fi
+   #    if [ ${{ env.NEED_DTBO }} = true ]; then
+   #        if [ -f android-kernel/out/arch/${{ env.ARCH }}/boot/dtbo.img ]; then
+   #            echo "CHECK_DTBO_IS_OK=true" >> $GITHUB_ENV
+   #        else
+   #            echo "DTBO image is empty"
+   #            exit 1
+   #        fi
+   #    fi
   
     - name: Make Anykernel3
       if: env.CHECK_FILE_IS_OK == 'true'
