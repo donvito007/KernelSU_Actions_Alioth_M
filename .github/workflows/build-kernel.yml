@@ -74,9 +74,9 @@ jobs:
         wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r487747c.tar.gz
         tar -C clang-aosp/ -zxvf clang-r487747c.tar.gz
         mkdir gcc-aosp
-        wget https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/archive/refs/heads/lineage-19.1.zip
-        unzip -o lineage-19.1.zip -d gcc-aosp/
-
+        wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/961622e926a1b21382dba4dd9fe0e5fb3ee5ab7c.tar.gz
+        tar -C gcc-aosp/ -zxvf 961622e926a1b21382dba4dd9fe0e5fb3ee5ab7c.tar.gz
+        
     - name: Download kernel source
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
