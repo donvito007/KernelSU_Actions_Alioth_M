@@ -8,19 +8,19 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/SelectSex/Xiaomi_Kernel_OpenSource-dipper-q-oss'
+        default: 'https://github.com/donvito007/LawRun_xiaomi_sdm845_CAF'
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: 'main'
+        default: 'master'
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
-        default: 'dipper_user_defconfig'
+        default: 'LawRun_defconfig'
       KERNEL_FILE:
         description: 'Your kernel out image name'
         required: true
-        default: 'Image'
+        default: 'Image.gz'
       CLANG_VERSION:
         description: 'Clang version'
         required: true
