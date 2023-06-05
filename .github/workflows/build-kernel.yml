@@ -8,15 +8,15 @@ on:
       KERNEL_SOURCE:
         description: 'Kernel Source'
         required: true
-        default: 'https://github.com/donvito007/neko_kernel_xiaomi_gauguin'
+        default: 'https://github.com/SelectSex/Xiaomi_Kernel_OpenSource-dipper-q-oss'
       KERNEL_SOURCE_BRANCH:
         description: 'Branch'
         required: true
-        default: 'feature/KSU'
+        default: 'main'
       KERNEL_DEFCONFIG:
         description: 'Defconfig'
         required: true
-        default: 'vendor/gauguin_user_defconfig'
+        default: 'dipper_user_defconfig'
       KERNEL_FILE:
         description: 'Your kernel out image name'
         required: true
