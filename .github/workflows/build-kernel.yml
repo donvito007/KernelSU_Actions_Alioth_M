@@ -215,7 +215,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.KERNEL_IMAGE_NAME }}
-        path: kernel_workspace/android-kernel/out/arch/arm64/boot/Image
+        path: kernel_workspace/android-kernel/out/arch/arm64/boot/Image.gz
 
     - name: Upload AnyKernel3
       if: env.CHECK_FILE_IS_OK == 'true'
