@@ -56,8 +56,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-aosp
-        wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz
-        tar -C clang-aosp/ -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz
+        wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r487747c.tar.gz
+        tar -C clang-aosp/ -zxvf clang-r487747c.tar.gz
 
     - name: Download Custom-Clang
       if: env.USE_CUSTOM_CLANG == 'true'
@@ -72,9 +72,9 @@ jobs:
                 git clone ${{ env.CUSTOM_CLANG_SOURCE }} -b ${{ env.CUSTOM_CLANG_BRANCH }} clang-aosp --depth=1
             fi        
         else
-            wget -O clang.zip ${{ env.CUSTOM_CLANG_SOURCE }}
+            wget -O clang.tar.gz ${{ env.CUSTOM_CLANG_SOURCE }}
             mkdir clang-aosp
-            unzip clang.zip -d clang-aosp/
+            tar -C clang-aosp/ -zxvf clang.tar.gz
         fi
 
     - name: Download Gcc-aosp
@@ -109,7 +109,7 @@ jobs:
       if: env.BUILD_BOOT_IMG == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        wget -O boot-source.img ${{ env.SOURCE_BOOT_IMAGE }}
+        wget -O boot-source.img ${{ env.SOURCE_BOOT_IMAGE }} --no-check-certificate
         if [ -f boot-source.img ]; then
             echo "FORMAT_MKBOOTING=$(echo `tools/unpack_bootimg.py --boot_img=boot-source.img --format mkbootimg`)" >> $GITHUB_ENV
             echo "HAVE_SOURCE_BOOT_IMAGE=true" >> $GITHUB_ENV
@@ -119,7 +119,8 @@ jobs:
       if: env.ENABLE_KERNELSU == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.KERNELSU_TAG }}
+        rm -rf KernelSU
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
         echo "UPLOADNAME=-KernelSU" >> $GITHUB_ENV
 
     - name: Setup Configuration for Kernel
